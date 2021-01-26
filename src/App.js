@@ -31,19 +31,26 @@ function App() {
   //#endregion
 
   //#region gsAPI
-  const [googleData, setGoogleData] = useState('');
+  const [googleDataTB, setGoogleDataTB] = useState('');
+  const [googleDataCD, setGoogleDataCD] = useState('');
 
   useEffect(() => {
     fetch(`https://sheets.googleapis.com/v4/spreadsheets/${process.env.REACT_APP_GS_ID}/values/TB!BX6%3ACA?majorDimension=COLUMNS&key=${process.env.REACT_APP_GS_API_KEY}`)
       .then(res => res.json())
-      .then(setGoogleData);
+      .then(setGoogleDataTB);
+  }, []);
+  useEffect(() => {
+    fetch(`https://sheets.googleapis.com/v4/spreadsheets/${process.env.REACT_APP_GS_ID}/values/CD!BX6%3ACA?majorDimension=COLUMNS&key=${process.env.REACT_APP_GS_API_KEY}`)
+      .then(res => res.json())
+      .then(setGoogleDataCD);
   }, []);
   //#endregion
 
   const [lookupValue, setLookupValue] = useState('');
   const [measurement, setMeasurement] = useState('');
-  const [storage, setStorage] = useState('');
   const [buyinPrice, setBuyinPrice] = useState('');
+  const [storageTB, setStorageTB] = useState('');
+  const [storageCD, setStorageCD] = useState('');
 
   function handleLookup(newLookupValue) {
     // handle null or empty input in console error
@@ -52,16 +59,20 @@ function App() {
     // only update look up if new input is entered
     if (newLookupValue.toString().trim().length > 0 && lookupValue !== newLookupValue){
       setLookupValue(newLookupValue);
-      const indexOfLookup = googleData.values[0].indexOf(newLookupValue);
-      if (indexOfLookup >= 0) {
-        setMeasurement(googleData.values[1][indexOfLookup]);
-        setStorage(googleData.values[2][indexOfLookup]);
-        setBuyinPrice(googleData.values[3][indexOfLookup]);
+      const indexOfLookupTB = googleDataTB.values[0].indexOf(newLookupValue);
+      if (indexOfLookupTB >= 0) {
+        setMeasurement(googleDataTB.values[1][indexOfLookupTB]);
+        setBuyinPrice(googleDataTB.values[3][indexOfLookupTB]);
+        setStorageTB(googleDataTB.values[2][indexOfLookupTB]);
+      }
+      const indexOfLookupCD = googleDataCD.values[0].indexOf(newLookupValue);
+      if (indexOfLookupCD >= 0) {
+        setStorageCD(googleDataCD.values[2][indexOfLookupCD]);
       }
     }
   }
 
-  if (googleData) {
+  if (googleDataTB && googleDataCD) {
 
     return (
       <div className="App">
@@ -124,18 +135,19 @@ function App() {
               onChange={(event, newLookupValue) => {
                 handleLookup(newLookupValue);
               }}
-              options={googleData.values[0]}
+              options={googleDataTB.values[0]}
               style={{ width: 300 }}
               renderInput={(params) => (
                 <TextField {...params} label="Search/Tu khoa" variant="outlined" />
               )}
             /></div>
           {/* <div>{`value: ${lookupValue !== null ? `'${lookupValue}'` : 'null'}`}</div> */}
-          <TextField className={classes.output} id="name-output" label="Product name/Ten hang" value={lookupValue} variant="outlined" onChange={handleLookup(lookupValue)} />
-          <TextField className={classes.output} id="measurement-output" label="Measurement/Don vi" value={measurement} variant="outlined" onChange={handleLookup(lookupValue)} />
-          <TextField className={classes.output} id="buyin-price-output" label="Buyin price/Gia nhap" value={(buyinPrice * 1).toFixed(2) + ' VND'} variant="outlined" onChange={handleLookup(lookupValue)} />
-          <TextField className={classes.output} id="sellling-price-output" label="Sellling price/Gia ban" value={(buyinPrice * 1.15).toFixed(2) + ' VND'} variant="outlined" onChange={handleLookup(lookupValue)} />
-          <TextField className={classes.output} id="storage-output" label="Storage/Ton kho" value={storage + ' ' + measurement} variant="outlined" onChange={handleLookup(lookupValue)} />
+          <div><TextField className={classes.output} id="name-output" label="Product name/Ten hang" value={lookupValue} variant="outlined" onChange={handleLookup(lookupValue)} /></div>
+          <div><TextField className={classes.output} id="measurement-output" label="Measurement/Don vi" value={measurement} variant="outlined" onChange={handleLookup(lookupValue)} /></div>
+          <div><TextField className={classes.output} id="buyin-price-output" label="Buyin price/Gia nhap" value={(buyinPrice * 1).toFixed(2) + ' VND'} variant="outlined" onChange={handleLookup(lookupValue)} /></div>
+          <div><TextField className={classes.output} id="sellling-price-output" label="Sellling price/Gia ban" value={(buyinPrice * 1.15).toFixed(2) + ' VND'} variant="outlined" onChange={handleLookup(lookupValue)} /></div>
+          <div><TextField className={classes.output} id="storageTB-output" label="StorageTB/Ton kho TB" value={storageTB * 1 + ' ' + measurement} variant="outlined" onChange={handleLookup(lookupValue)} /></div>
+          <div><TextField className={classes.output} id="storageCD-output" label="StorageCD/Ton kho CD" value={storageCD * 1 + ' ' + measurement} variant="outlined" onChange={handleLookup(lookupValue)} /></div>
         </Container>
       </div>
     );

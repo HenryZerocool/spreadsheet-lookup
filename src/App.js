@@ -1,9 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { TextField, Container } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import { makeStyles } from '@material-ui/core/styles';
 import "./App.css";
 
+const useStyles = makeStyles({
+  primary1:{
+    color: '#06c167'
+  },
+  lookup:{
+    margin: '10px auto'
+  },
+  output: {
+    margin: 5
+  }
+})
+
 function App() {
+  const classes = useStyles();
   //#region logging in
   // const [username, setUsername] = useState('');
   // const [password, setPassword] = useState('');
@@ -101,9 +115,11 @@ function App() {
           //#endregion
         }
         <Container maxWidth="sm">
+          <h1 className={classes.primary1}>Lookup / Tim kiem</h1>
           <div>
             <Autocomplete
               id="lookup-input"
+              className={classes.lookup}
               value={lookupValue}
               onChange={(event, newLookupValue) => {
                 handleLookup(newLookupValue);
@@ -111,15 +127,15 @@ function App() {
               options={googleData.values[0]}
               style={{ width: 300 }}
               renderInput={(params) => (
-                <TextField {...params} label="Input" variant="outlined" />
+                <TextField {...params} label="Search/Tu khoa" variant="outlined" />
               )}
             /></div>
           {/* <div>{`value: ${lookupValue !== null ? `'${lookupValue}'` : 'null'}`}</div> */}
-          <TextField id="name-output" label="name" value={lookupValue} variant="outlined" disabled />
-          <TextField id="measurement-output" label="measurement" value={measurement} variant="outlined" disabled />
-          <TextField id="buyin-price-output" label="buyin-price" value={(buyinPrice * 1).toFixed(2)} variant="outlined" disabled />
-          <TextField id="sellling-price-output" label="sellling-price" value={(buyinPrice * 1.15).toFixed(2)} variant="outlined" disabled />
-          <TextField id="storage-output" label="storage" value={storage} variant="outlined" disabled />
+          <TextField className={classes.output} id="name-output" label="Product name/Ten hang" value={lookupValue} variant="outlined" onChange={handleLookup(lookupValue)} />
+          <TextField className={classes.output} id="measurement-output" label="Measurement/Don vi" value={measurement} variant="outlined" onChange={handleLookup(lookupValue)} />
+          <TextField className={classes.output} id="buyin-price-output" label="Buyin price/Gia nhap" value={(buyinPrice * 1).toFixed(2) + ' VND'} variant="outlined" onChange={handleLookup(lookupValue)} />
+          <TextField className={classes.output} id="sellling-price-output" label="Sellling price/Gia ban" value={(buyinPrice * 1.15).toFixed(2) + ' VND'} variant="outlined" onChange={handleLookup(lookupValue)} />
+          <TextField className={classes.output} id="storage-output" label="Storage/Ton kho" value={storage + ' ' + measurement} variant="outlined" onChange={handleLookup(lookupValue)} />
         </Container>
       </div>
     );

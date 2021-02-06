@@ -5,9 +5,15 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(
-  <React.StrictMode>
+  (process.env.REACT_APP_DEV_ENV === '1' ? (
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  ) : (
+  <React>
     <App />
-  </React.StrictMode>,
+    </React>)
+  ),
   document.getElementById('root')
 );
 
